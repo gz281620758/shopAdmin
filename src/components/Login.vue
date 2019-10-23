@@ -52,18 +52,31 @@ export default {
           // } else {
           //   console.log(meta.msg)
           // }
-
+          console.log(res)
           // axios优化
           // 对象结构
-          const { meta } = res.data
+          const { meta, data } = res.data
+
           if (meta.status === 200) {
+            console.log(data.token)
+
             // 跳转首页
+            localStorage.setItem('token', data.token)
             this.$message({
               message: '登录成功,跳转首页!',
               type: 'success',
               center: 'true'
             })
             this.$router.push('/index')
+            // this.$router.push('/index')
+            // router.beforEach((to, from, next) => {
+            //   const token = window.localStorage.setItem('token', data.token)
+            //   if (to.path === '/login' || token) {
+            //     next()
+            //   } else {
+            //     next('/login')
+            //   }
+            // })
           } else {
             console.log(meta.msg)
             this.$message({
