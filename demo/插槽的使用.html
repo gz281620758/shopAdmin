@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Document</title>
+
+        <style>
+        .modal{
+            width: 200px;
+            /* height: 100px; */
+            background-color: pink;
+            border:1px solid #000;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+          <modal>
+              <p>我是一个插槽</p>
+          </modal>
+          <modal></modal>
+        </div>
+
+        <script src="./vue.js"></script>
+        <script>
+            Vue.component('modal',{
+                template:`
+                <div class='modal'>
+                <div>
+                 <h1>警告!</h1>
+                 </div>
+                <div> 
+                <p>欢迎登陆</p>
+                </div>
+                <div>  
+                <button>确定</button>
+                <button>取消</button>
+                </div>
+                <slot></slot>
+                </div>
+                `
+            })
+            const vm = new Vue({
+                el: '#app',
+                data: {
+                    msg: 'hello vue'
+                }
+            })
+        </script>
+    </body>
+</html>

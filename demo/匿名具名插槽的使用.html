@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Document</title>
+
+        <style>
+        .modal{
+            width: 200px;
+            /* height: 100px; */
+            background-color: pink;
+            border:1px solid #000;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+          <modal>
+              <template v-slot:alert>
+                    <p>欢迎登陆</p>
+              </template>
+              <template v-slot:btn='obj'>
+                <div>  
+                   
+                    <button>{{obj.yes}}</button>
+                    <button>{{obj.no}}</button>
+                </div>
+            </template>
+          </modal>
+          <modal>
+                <template v-slot:alert>
+                        <p>你确定要退出吗</p>
+                  </template>
+                  <template v-slot:btn>
+                        <div>  
+                            <button>确定</button>
+                            <button>取消</button>
+                        </div>
+                    </template>
+          </modal>
+        </div>
+
+        <script src="./vue.js"></script>
+        <script>
+            Vue.component('modal',{
+                template:`
+                <div class='modal'>
+                <div>
+                 <h1>警告!</h1>
+                 </div>
+                <div> 
+               <slot name='alert'>
+               </slot>
+                </div>
+                <slot name='btn' money="100" :yes="yes" :no="no"></slot>
+                </div>
+                `,
+                data:function(){
+                    return {
+                        yes:'是',
+                       no:'否'
+                    }
+                }
+            })
+            const vm = new Vue({
+                el: '#app',
+                data: {
+                    msg: 'hello vue',
+                   
+                }
+            })
+        </script>
+    </body>
+</html>

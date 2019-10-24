@@ -9,7 +9,7 @@
       <h1>电商后台管理系统</h1>
     </div>
     <div class="exit">
-      欢迎光临~<a href="javascript:void(0)">退出</a>
+      欢迎光临~<a href="javascript:void(0)" @click="exit">退出</a>
     </div>
   </el-header>
   <el-container>
@@ -63,7 +63,25 @@
 
 <script>
 export default {
-
+  methods: {
+    exit () {
+    // 删除token,弹出回话框,跳转登录页
+      this.$confirm('确定要退出系统吗?', '温馨提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 跳转至登录页
+        this.$router.push('/login')
+        // 删除token
+        localStorage.removeItem('token')
+        this.$message({
+          type: 'success',
+          message: '成功退出'
+        })
+      })
+    }
+  }
 }
 </script>
 <style lang='scss' >

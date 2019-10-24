@@ -22,6 +22,13 @@
       prop="name"
       label="用户状态"
       width="180">
+      <template v-slot:default="obj">
+      <el-switch
+       v-model="obj.row.mg_state"
+       active-color="#13ce66"
+       inactive-color="#ff4949">
+     </el-switch>
+      </template>
     </el-table-column>
     <el-table-column
       prop="address"

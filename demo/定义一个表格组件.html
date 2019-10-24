@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Document</title>
+        <style>
+        table{
+            border: 1px solid #ccc;
+        }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+            <my-table :list="list">
+                <template v-slot:default="obj">
+                        <button @click="del(obj.row.id)">删除{{obj.id}}</button>
+                </template>
+                
+            </my-table>
+        </div>
+
+        <script src="./vue.js"></script>
+        <script>
+            Vue.component('my-table',{
+                template:`
+                <table>
+                <thead>
+                <th>序号</th>
+                <th>姓名</th>
+                <th>年纪</th>
+                <th>描述</th>
+                <th>操作</th>
+                </thead>
+                <tbody>
+                <tr v-for="(item,index) in list" :key="item.id">
+                <td>{{index}}</td>
+                <td>{{item.name}}</td>
+                <td>{{item.age}}</td>
+                <td>{{item.desc}}</td>
+                <td>
+                <slot :row="item"></slot>
+                </td>
+                </tr>
+                </tbody>
+                </table>
+                `,
+                props:['list']
+            })
+            const vm = new Vue({
+                el: '#app',
+                data: {
+                    msg: 'hello vue',
+                    list:[
+                            { id:41,name:'张三',age:'45',desc:'帅' },
+                            { id:13,name:'李四',age:'15',desc:'帅' },
+                            { id:15,name:'王五',age:'25',desc:'帅' },
+                            { id:63,name:'李老八',age:'65',desc:'帅' },
+                            ]
+                },
+                methods:{
+                    del(id){
+  this.list = this.list.filter(item=>item.id!=id)
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>
