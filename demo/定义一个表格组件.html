@@ -16,11 +16,9 @@
             <my-table :list="list">
                 <template v-slot:default="obj">
                         <button @click="del(obj.row.id)">删除{{obj.id}}</button>
-                </template>
-                
+                </template>               
             </my-table>
         </div>
-
         <script src="./vue.js"></script>
         <script>
             Vue.component('my-table',{

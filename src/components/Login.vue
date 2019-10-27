@@ -1,12 +1,12 @@
 <template>
 <div class="login">
     <el-form ref="form" :rules="rules" :model="form" label-width="80px"  status-icon>
-         <img src="../assets/avatar.jpg" alt="" class="logo">
+         <img src="../assets/ligan.jpg" alt="" class="logo">
   <el-form-item label="用户名" prop="username">
-    <el-input v-model="form.username" ></el-input>
+    <el-input @keyup.enter.native="submitForm" v-model="form.username" ></el-input>
   </el-form-item>
     <el-form-item label="密码" prop="password">
-    <el-input v-model="form.password" type="password"></el-input>
+    <el-input  @keyup.enter.native="submitForm" v-model="form.password" type="password"></el-input>
   </el-form-item>
   <el-form-item>
     <el-button type="primary" class="loginBtn" @click="submitForm">登录</el-button>
@@ -18,7 +18,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 export default {
   data () {
     return {
@@ -39,55 +38,22 @@ export default {
     }
   },
   methods: {
-    submitForm () {
-      this.$refs.form.validate((valid) => {
-        if (!valid) return
-
-        axios.post('http://localhost:8888/api/private/v1/login', this.form).then(res => {
-          // let meta = res.data.meta
-          // if (meta.status === 200) {
-          //   // console.log(meta.msg)
-          //   // 跳转首页
-          //   this.$router.push('/index')
-          // } else {
-          //   console.log(meta.msg)
-          // }
-          console.log(res)
-          // axios优化
-          // 对象结构
-          const { meta, data } = res.data
-
-          if (meta.status === 200) {
-            console.log(data.token)
-
-            // 跳转首页
-            localStorage.setItem('token', data.token)
-            this.$message({
-              message: '登录成功,跳转首页!',
-              type: 'success',
-              center: 'true'
-            })
-            this.$router.push('/index')
-            // this.$router.push('/index')
-            // router.beforEach((to, from, next) => {
-            //   const token = window.localStorage.setItem('token', data.token)
-            //   if (to.path === '/login' || token) {
-            //     next()
-            //   } else {
-            //     next('/login')
-            //   }
-            // })
-          } else {
-            console.log(meta.msg)
-            this.$message({
-              message: '登录失败',
-              center: true,
-              type: 'error',
-              duration: 1000
-            })
-          }
-        })
-      })
+    async submitForm () {
+      try {
+        await this.$refs.form.validate()
+        const { meta, data } = await this.$axios.post('/login', this.form)
+        if (meta.status === 200) {
+          // 跳转首页
+          localStorage.setItem('token', data.token)
+          this.$message.success(meta.msg)
+          this.$router.push('/index')
+        } else {
+          // console.log(meta.msg)
+          this.$message.error(meta.msg)
+        }
+      } catch (error) {
+        console.log(error)
+      }
     },
     resetForm () {
       this.$refs.form.resetFields()
@@ -100,7 +66,8 @@ export default {
 .login{
     width:100%;
     height:100%;
-    background-color: pink;
+    background-color:#fa5a5a;
+    //  #82c8a0
     overflow: hidden;
     .el-form{
        width:400px;
@@ -119,6 +86,8 @@ export default {
         top:-70px;
         border-radius: 50%;
         border: 10px solid #fff;
+        width:130px;
+        height:130px;
     }
     .loginBtn{
         margin-right: 70px;

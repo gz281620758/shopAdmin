@@ -21,5 +21,13 @@ body,html,#app{
 width:100%;
 height: 100%
 }
+#app{
+.el-breadcrumb{
+  line-height: 4;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+}
 
 </style>
