@@ -52,7 +52,7 @@
     <template v-slot:default="obj">
     <el-button plain type="primary" icon="el-icon-edit" @click="showEditDialog(obj.row)"></el-button>
     <el-button plain type="danger" icon="el-icon-delete" @click="del(obj.row.id)"></el-button>
-     <el-button plain type="success" icon="el-icon-check" >分配角色</el-button>
+     <el-button plain type="success" icon="el-icon-check" @click="showassignRole(obj.row)">分配角色</el-button>
     </template>
     </el-table-column>
   </el-table>
@@ -108,6 +108,25 @@
     <el-button type="primary" @click="editUser" >确 定</el-button>
    </div>
 </el-dialog>
+<!-- 分配角色的dialog -->
+<el-dialog title="分配角色" :visible.sync="assignRoleVisible" width="40%">
+    <el-form ref="assignForm"  :model="assignForm" status-icon label-width="80px">
+     <el-form-item label="用户名">
+      <el-tag type="info">{{assignForm.username}}</el-tag>
+    </el-form-item>
+      <el-form-item label="角色列表">
+    <el-select v-model="assignForm.roleId">
+    <el-option v-for="item in roleList" :key="item.id" :label="item.roleName" :value="item.id">
+    </el-option>
+  </el-select>
+    </el-form-item>
+  </el-form>
+   <div slot="footer" class="dialog-footer">
+    <el-button @click="assignRoleVisible=false">取 消</el-button>
+    <el-button type="primary" @click="assignRole" >确 定</el-button>
+   </div>
+
+</el-dialog>
 </div>
 </template>
 
@@ -119,12 +138,14 @@ export default {
   data: function () {
     return {
       userList: [],
+      roleList: [],
       query: '',
       pagenum: 1,
       pagesize: 2,
       totalsize: 1,
       dialogFormVisible: false,
       dialogEditVisible: false,
+      assignRoleVisible: false,
       form: {
         username: '',
         password: '',
@@ -136,6 +157,12 @@ export default {
         email: '',
         mobile: '',
         id: ''
+      },
+      assignForm: {
+        username: '',
+        id: '',
+        // 角色id
+        roleId: ''
       },
       rules: {
         username: [
@@ -207,9 +234,7 @@ export default {
     },
     async  changestatus (id, type) {
       // console.log(id, type)
-      const res = await this.$axios.put(`users/${id}/state/${type}`)
-      console.log(res)
-      const meta = res.meta
+      const { meta } = await this.$axios.put(`users/${id}/state/${type}`)
       if (meta.status === 200) {
         this.$message.success(meta.msg)
       } else {
@@ -265,6 +290,36 @@ export default {
         }
       } catch (e) {
         console.log(e)
+      }
+    },
+    // 渲染分配角色下拉列表，准备数据
+    async  showassignRole (row) {
+      this.assignRoleVisible = true
+      this.assignForm.username = row.username
+      // 用户id
+      this.assignForm.id = row.id
+      const { data, meta } = await this.$axios.get('roles')
+      if (meta.status === 200) {
+        // 获取下拉框数据
+        this.roleList = data
+      }
+      // 根据用户id查询角色id
+      const userInfo = await this.$axios.get(`users/${row.id}`)
+      this.assignForm.roleId = userInfo.data.rid
+    },
+    // 提交分配角色
+    async assignRole () {
+      const { id, roleId } = this.assignForm
+      // 表单校验，角色不能为空
+      if (!roleId) this.$message.error('请选择角色名')
+      const { meta } = await this.$axios.put(`users/${id}/role`, {
+        rid: roleId
+      })
+      if (meta.status === 200) {
+        this.$message.success(meta.msg)
+        this.assignRoleVisible = false
+      } else {
+        this.$message.error(meta.msg)
       }
     }
   }

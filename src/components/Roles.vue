@@ -14,7 +14,7 @@
     <el-table-column type="index"></el-table-column>
     <el-table-column type="expand">
     <template slot-scope="obj">
-     <el-row v-for="l1 in obj.row.children" :key="l1.id" class="l1">
+     <el-row v-for="l1 in obj.row.children" :key="l1.id" class="l1" >
          <el-col :span="4"> <el-tag  closable @close="delTag(obj.row,l1.id)">{{l1.authName}}</el-tag> <i class="el-icon-arrow-right"></i> </el-col>
          <el-col :span="20">
              <el-row v-for="l2 in l1.children" :key="l2.id">
@@ -25,11 +25,10 @@
                 </el-tag>
                </el-col>
              </el-row>
-
          </el-col>
      </el-row>
-
     </template>
+
     </el-table-column>
     <el-table-column
       prop="roleName"
@@ -45,21 +44,25 @@
       <template v-slot:default="{row}">
     <el-button type="primiary" plain icon="el-icon-edit" @click="showRole(row)"></el-button>
     <el-button type="danger" plain icon="el-icon-delete" @click="showdeldialog(row.id)"></el-button>
-    <el-button type="success" plain icon="el-icon-check" @click="showAssignVisible(row.id)">分配权限</el-button>
+    <el-button type="success" plain icon="el-icon-check" @click="showAssignVisible(row)">分配权限</el-button>
     </template>
     </el-table-column>
   </el-table>
   <!-- 弹出分配权限框 -->
 <el-dialog title="分配权限" :visible.sync="AssignVisible">
+  <!-- 树形控件 -->
 <el-tree
-  :data="rolesList"
+  :data="data"
   show-checkbox
-  node-key="nodeid"
- >
+  default-expand-all
+  node-key="id"
+  ref="tree"
+  :props="defaultprops"
+>
 </el-tree>
   <div slot="footer" class="dialog-footer">
     <el-button @click="AssignVisible = false">取 消</el-button>
-    <el-button type="primary" @click="AssignVisible = false">确 定</el-button>
+    <el-button type="primary" @click="assignRights">确 定</el-button>
   </div>
 </el-dialog>
  <!-- 弹出添加角色框 -->
@@ -115,6 +118,13 @@ export default {
       delroleform: {
         id: ''
       },
+      data: [],
+      defaultprops: {
+        children: 'children',
+        label: 'authName'
+      },
+      // 角色id
+      roleId: '',
       rules: {
         roleName: [
           { required: true, message: '角色名称不能为空', trigger: ['blur', 'change'] }
@@ -122,8 +132,7 @@ export default {
         editroleName: [{
           required: true, message: '角色名称不能为空', trigger: ['blur', 'change']
         }]
-      },
-      nodeid: ''
+      }
     }
   },
   created () {
@@ -139,6 +148,7 @@ export default {
         this.$message.error(meta.msg)
       }
     },
+    // 删除tag
     async  delTag (row, roleId) {
       const { id } = row
       const { meta, data } = await this.$axios.delete(`roles/${id}/rights/${roleId}`)
@@ -152,9 +162,45 @@ export default {
       }
     },
     // 展示分配权限提示框
-    showAssignVisible (id) {
+    async showAssignVisible (row) {
+      // 确定角色id
+      this.roleId = row.id
       this.AssignVisible = true
-      this.nodeid = id
+      const { data, meta } = await this.$axios.get('rights/tree')
+      // console.log(res)
+      if (meta.status === 200) {
+        this.data = data
+        const nodeid = []
+        row.children.forEach(l1 => {
+          l1.children.forEach(l2 => {
+            l2.children.forEach(l3 => {
+              nodeid.push(l3.id)
+            })
+          })
+        })
+        this.$refs.tree.setCheckedKeys(nodeid)
+      } else {
+        this.$message.error(meta.msg)
+      }
+    },
+    // 分配权限
+    async  assignRights () {
+      this.AssignVisible = true
+      const checkedkeys = this.$refs.tree.getCheckedKeys()
+      const halfcheckedkeys = this.$refs.tree.getHalfCheckedKeys()
+      const rids = [...checkedkeys, ...halfcheckedkeys].join(',')
+      const { meta } = await this.$axios.post(`roles/${this.roleId}/rights`, {
+        rids
+      })
+      // console.log(res)
+      if (meta.status === 200) {
+        this.$message.success(meta.msg)
+        this.AssignVisible = false
+        // 重新渲染
+        this.getRolesList()
+      } else {
+        this.$message.error(meta.msg)
+      }
     },
     // 展示添加角色提示框
     showAddRoleDialog () {
