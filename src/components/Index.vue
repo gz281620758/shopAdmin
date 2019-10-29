@@ -51,7 +51,7 @@ export default {
   },
   async created () {
     const { meta, data } = await this.$axios.get('menus')
-    console.log(data)
+    // console.log(data)
     if (meta.status === 200) {
       this.menuList = data
     } else {
