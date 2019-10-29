@@ -21,29 +21,17 @@
       unique-opened
       router
       >
-      <el-submenu index="1">
+
+      <el-submenu :index="menu.path" v-for="menu in menuList" :key="menu.id" >
         <template v-slot:title>
           <i class="el-icon-location"></i>
-          <span>用户管理</span>
+          <span>{{menu.authName}}</span>
         </template>
-          <el-menu-item index="user">
+          <el-menu-item :index="item.path" v-for="item in menu.children" :key="item.id">
             <i class="el-icon-menu"></i>
-            用户列表</el-menu-item>
+            {{item.authName}}</el-menu-item>
       </el-submenu>
-      <el-submenu index="2">
-        <template v-slot:title>
-          <i class="el-icon-location"></i>
-          <span>权限管理</span>
-        </template>
-          <el-menu-item index="roles">
-             <i class="el-icon-menu"></i>
-            角色列表
-            </el-menu-item>
-          <el-menu-item index="rights">
-             <i class="el-icon-menu"></i>
-            权限列表
-            </el-menu-item>
-      </el-submenu>
+
     </el-menu>
     </el-aside>
     <el-main>
@@ -56,6 +44,20 @@
 
 <script>
 export default {
+  data () {
+    return {
+      menuList: ''
+    }
+  },
+  async created () {
+    const { meta, data } = await this.$axios.get('menus')
+    console.log(data)
+    if (meta.status === 200) {
+      this.menuList = data
+    } else {
+      this.$message.error(meta.msg)
+    }
+  },
   methods: {
     exit () {
     // 删除token,弹出回话框,跳转登录页

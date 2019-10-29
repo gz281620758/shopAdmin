@@ -17,7 +17,7 @@
       <el-row  v-if="row.children.length===0">
         <span>暂无权限</span>
       </el-row>
-     <el-row v-for="l1 in obj.row.children" :key="l1.id" class="l1" >
+     <el-row v-for="l1 in row.children" :key="l1.id" class="l1" >
          <el-col :span="4"> <el-tag  closable @close="delTag(row,l1.id)">{{l1.authName}}</el-tag> <i class="el-icon-arrow-right"></i> </el-col>
          <el-col :span="20">
              <el-row v-for="l2 in l1.children" :key="l2.id">
