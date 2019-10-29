@@ -13,14 +13,17 @@
     style="width: 100%">
     <el-table-column type="index"></el-table-column>
     <el-table-column type="expand">
-    <template slot-scope="obj">
+    <template slot-scope="{row}">
+      <el-row  v-if="row.children.length===0">
+        <span>暂无权限</span>
+      </el-row>
      <el-row v-for="l1 in obj.row.children" :key="l1.id" class="l1" >
-         <el-col :span="4"> <el-tag  closable @close="delTag(obj.row,l1.id)">{{l1.authName}}</el-tag> <i class="el-icon-arrow-right"></i> </el-col>
+         <el-col :span="4"> <el-tag  closable @close="delTag(row,l1.id)">{{l1.authName}}</el-tag> <i class="el-icon-arrow-right"></i> </el-col>
          <el-col :span="20">
              <el-row v-for="l2 in l1.children" :key="l2.id">
-               <el-col :span="4"><el-tag type="success" class="l2"  closable  @close="delTag(obj.row,l2.id)">{{l2.authName}}</el-tag> <i class="el-icon-arrow-right"></i></el-col>
+               <el-col :span="4"><el-tag type="success" class="l2"  closable  @close="delTag(row,l2.id)">{{l2.authName}}</el-tag> <i class="el-icon-arrow-right"></i></el-col>
                <el-col :span="20">
-                       <el-tag v-for="l3 in l2.children" :key="l3.id" type="warning" class="l3"  closable  @close="delTag(obj.row,l3.id)">
+                       <el-tag v-for="l3 in l2.children" :key="l3.id" type="warning" class="l3"  closable  @close="delTag(row,l3.id)">
                     {{l3.authName}}
                 </el-tag>
                </el-col>
@@ -237,6 +240,7 @@ export default {
         if (meta.status === 201) {
           this.$message.success(meta.msg)
           this.AddRoleVisible = false
+          this.getRolesList()
         } else {
           this.message.error(meta.msg)
         }

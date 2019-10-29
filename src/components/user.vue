@@ -305,7 +305,7 @@ export default {
       }
       // 根据用户id查询角色id
       const userInfo = await this.$axios.get(`users/${row.id}`)
-      this.assignForm.roleId = userInfo.data.rid
+      this.assignForm.roleId = userInfo.data.rid === -1 ? '' : userInfo.data.rid
     },
     // 提交分配角色
     async assignRole () {
